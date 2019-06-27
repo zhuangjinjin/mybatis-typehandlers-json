@@ -3,6 +3,16 @@
 
 mybatis-typehandlers-json 提供了mybatis的json字段的TypeHandler。
 
+## 环境
+
+JDK环境：JDK1.8+
+
+项目依赖：
+
+* mybatis-3.5.1
+* fastjson-1.2.58
+* slf4j-1.7.25
+
 ## 使用
 
 ### Maven
@@ -58,16 +68,18 @@ dependencies {
 
 ### 代码
 
-在应用启用的代码中加入扫描实体类的包，如下代码：
+我这边就用`${entityPackage}`代表实体类的包路径，我们就先假设`${entityPacakge}`为`a.b.c.entity`我们需要在应用启动的地方手动扫描实体类的包路径。代码如下：
 
 ```java
 Bootstrap bootstrap = new Bootstrap.Builder().build();
-bootstrap.scanEntityPackages(new String[]{"xxx.xxx.entity"});
+bootstrap.scanEntityPackages(new String[]{"a.b.c.entity"});
 ```
 
 在Entity类中需要转成json字符串字段加上`@JsonString`注解，如下：
 
 ```java
+package a.b.c.entity;
+
 public class UserEntity {
 
     private long id;
@@ -76,6 +88,34 @@ public class UserEntity {
     @JsonString
     private List<Email> email; //如果这边是要当成一个json字段存入的话，加上@JsonString
 }
+```
+
+### 配置
+
+在`mybatis-config.xml`中加入动态生成的`TypeHandler`，如下：
+
+```xml
+<typeHandlers>
+  <typeHandler handler="io.github.ukuz.mybatis.type.json.type.ListTypeHandler$Email"/>
+</typeHandlers>
+```
+
+规则：如果字段是`List`类型，则typeHandler的类名是**'io.github.ukuz.mybatis.type.json.type.ListTypeHandler' **+** '\$'** + **'泛型类型'**，上例的泛型类型是`Email`。
+
+在`UserMapper.xml`中加入如下：
+
+```xml
+<resultMap id="user" type="a.b.c.UserEntity">
+  <result column="email" typeHandler="io.github.ukuz.mybatis.type.json.type.ListTypeHandler$Email" property="email" />
+</resultMap>
+  
+<select id="selectById" resultMap="user">
+  select * from user where id = #{id}
+</select>
+  
+<insert id="save" parameterType="a.b.c.UserEntity">
+  INSERT INTO user (id, name, age, email) VALUES (#{id}, #{name}, #{age}, #{email, typeHandler = io.github.ukuz.mybatis.type.json.type.ListTypeHandler$Email})
+</insert>
 ```
 
 ### Demo
