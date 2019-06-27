@@ -34,7 +34,7 @@ public class Bootstrap {
         this.typeHandlerRegistry = new AdditionalTypeHandlerRegistry();
     }
 
-    public void startUp(String[] scanEntityPackages) throws URISyntaxException, ClassNotFoundException {
+    public void scanEntityPackages(String[] scanEntityPackages) throws URISyntaxException, ClassNotFoundException {
         scanTypeHandlers(scanEntityPackages);
     }
 
