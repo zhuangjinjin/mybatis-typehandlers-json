@@ -100,7 +100,7 @@ public class UserEntity {
 </typeHandlers>
 ```
 
-规则：如果字段是`List`类型，则typeHandler的类名是**'io.github.ukuz.mybatis.type.json.type.ListTypeHandler' **+** '\$'** + **'泛型类型'**，上例的泛型类型是`Email`。
+规则：如果字段是`List`类型，则typeHandler的类名是**'io.github.ukuz.mybatis.type.json.type.ListTypeHandler' **+ '**$**' + **'泛型类型'**，上例的泛型类型是`Email`。
 
 在`UserMapper.xml`中加入如下：
 
